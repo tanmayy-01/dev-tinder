@@ -48,6 +48,7 @@ app.get('/user', async (req, res) => {
     })
   }
 })
+
 app.get('/feed', async (req, res) => {
   try {
     const usersList = await User.find({})
@@ -79,6 +80,21 @@ app.delete('/user', async (req, res) => {
     res.json({
       status: true,
       message: 'User deleted Successfully!!'
+    })
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      message: error.message || 'Something went wrong..'
+    })
+  }
+});
+
+app.patch('/user', async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, req.body);
+    res.json({
+      status: true,
+      message: 'User updated Successfully!!'
     })
   } catch (error) {
     res.status(400).json({
