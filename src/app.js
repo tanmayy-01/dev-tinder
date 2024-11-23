@@ -24,6 +24,55 @@ app.post('/signup', async (req, res) => {
     } 
 })
 
+app.get('/user', async (req, res) => {
+  try {
+    const usersList = await User.find({emailId: req.body.emailId || ''})
+    if(usersList.length) {
+      res.json({
+        status: true,
+        data: usersList,
+        message: 'Users list fetch successfully!!'
+      })
+    }else {
+      res.status(404).json({
+        status: true,
+        data: usersList,
+        message: 'No users found'
+      })
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      data: [],
+      message: error.message || 'Something went wrong..'
+    })
+  }
+})
+app.get('/feed', async (req, res) => {
+  try {
+    const usersList = await User.find({})
+    if(usersList.length) {
+      res.json({
+        status: true,
+        data: usersList,
+        message: 'All users list fetch successfully!!'
+      })
+    }else {
+      res.status(404).json({
+        status: true,
+        data: usersList,
+        message: 'No users found'
+      })
+    }
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      data: [],
+      message: error.message || 'Something went wrong..'
+    })
+  }
+})
+
 connectDB()
   .then(() => {
     console.log("Database connection is established successfully!!");
