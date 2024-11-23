@@ -6,23 +6,22 @@ const User = require('./models/user')
 const app = express();
 const PORT = process.env.PORT || 1111;
 
-app.post('/signup', (req, res) => {
+app.use(express.json())
 
-    // Creation of the new instance of the User Model
-    const user = new User({
-        firstName: 'Manal',
-        lastName: 'Kamble',
-        emailId: 'manal@kamble.com',
-        password: 'manal@123',
-        age: 23,
-        gender: 'Male'
-    })
-    user.save();
-    res.json({
-        status: true,
-        message: 'User added Successfully!!'
-    });
-    
+app.post('/signup', async (req, res) => {
+    const user = new User(req.body)
+    try {
+     await user.save();
+     res.json({
+         status: true,
+         message: 'User added Successfully!!'
+     });
+    } catch (error) {
+      res.status(400).json({
+        status: false,
+        message: error.message
+      })
+    } 
 })
 
 connectDB()
