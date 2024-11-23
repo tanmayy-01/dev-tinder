@@ -1,11 +1,10 @@
 const express = require('express');
-PORT = 4444;
+require('dotenv').config();
+require('./config/database')
 
 const app = express();
+const PORT = process.env.PORT || 1111
 
-app.use((req,res) => {
-    res.send('Hello from server!!')
-})
 
 app.listen(PORT,() => {
     console.log(`Server is up on port ${PORT}`);
