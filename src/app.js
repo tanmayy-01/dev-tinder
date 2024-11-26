@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const connectDB = require("./config/database");
 const User = require('./models/user')
+const {validateSignUpData} = require('./utils/validations')
 
 const app = express();
 const PORT = process.env.PORT || 1111;
@@ -9,8 +10,9 @@ const PORT = process.env.PORT || 1111;
 app.use(express.json())
 
 app.post('/signup', async (req, res) => {
+  try {
+    validateSignUpData(req)
     const user = new User(req.body)
-    try {
      await user.save();
      res.json({
          status: true,
