@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const connectDB = require("./config/database");
 const User = require('./models/user')
+const bcrypt = require('bcrypt')
 const {validateSignUpData} = require('./utils/validations')
 
 const app = express();
@@ -12,7 +13,14 @@ app.use(express.json())
 app.post('/signup', async (req, res) => {
   try {
     validateSignUpData(req)
-    const user = new User(req.body)
+    const {firstName, lastName, emailId, password} = req.body;
+    const passwordHash = await bcrypt.hash(password, 10)
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash
+    })
      await user.save();
      res.json({
          status: true,
@@ -22,6 +30,33 @@ app.post('/signup', async (req, res) => {
       res.status(400).json({
         status: false,
         message: error.message
+      })
+    } 
+})
+app.post('/login', async (req, res) => {
+  try {
+    
+    const { emailId, password} = req.body;
+    const user = await User.findOne({emailId : emailId})
+    if(!user) {
+      throw new Error('User is not registerd!')
+    } 
+    
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if(!isPasswordCorrect) {
+      throw new Error('Password is Incorrect...')
+    }
+    else {
+      res.json({
+        status: true,
+        message: 'Successfully login..'
+    });
+    }
+     
+    } catch (error) {
+      res.status(400).json({
+        status: false,
+        message: `ERROR: ${error.message}`
       })
     } 
 })

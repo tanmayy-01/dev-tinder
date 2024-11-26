@@ -41,6 +41,6 @@ const userSchema = new Schema({
     gender:  {
         type: String
     }
-});
+},{timestamps: true});
 
 module.exports = mongoose.model('User', userSchema);
