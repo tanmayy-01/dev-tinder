@@ -7,6 +7,7 @@ const {validateSignUpData} = require('./utils/validations');
 const cookieParser = require("cookie-parser");
 const jwt = require('jsonwebtoken');
 const user = require("./models/user");
+const {userAuth} = require('./middlewares/auth')
 
 const app = express();
 const PORT = process.env.PORT || 1111;
@@ -67,26 +68,16 @@ app.post('/login', async (req, res) => {
     } 
 })
 
-app.get('/profile', async (req, res) => {
+app.get('/profile', userAuth, async (req, res) => {
   try {
-      const cookies = req.cookies;
-      const {token} = cookies;
-      if(!token) {
-        throw new Error('Invalid Token')
-      }
-      const decoded = jwt.verify(token, process.env.PRIVATE_KEY);
-      const {_id} = decoded;
-      const userProfile = await user.findById(_id);
-      if(userProfile) {
+     
+      const userProfile = req.userProfile; 
         res.json({
           status: true,
           data: userProfile,
           message: 'profile fetch successfully!!'
         })
-      } else {
-        throw new Error('User not found..')
-      }
-  
+     
   } catch (error) {
     res.status(400).json({
       status: false,
