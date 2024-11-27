@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt')
 const {validateSignUpData} = require('./utils/validations');
 const cookieParser = require("cookie-parser");
 const jwt = require('jsonwebtoken');
+const user = require("./models/user");
 
 const app = express();
 const PORT = process.env.PORT || 1111;
@@ -50,8 +51,7 @@ app.post('/login', async (req, res) => {
       throw new Error('Password is Incorrect...')
     }
     else {
-      const token = await jwt.sign({_id: user._id}, 'DEV@Tinder#143$')
-      console.log(token)
+      const token = jwt.sign({_id: user._id}, process.env.PRIVATE_KEY)
       res.cookie('token', token)
       res.json({
         status: true,
@@ -70,11 +70,22 @@ app.post('/login', async (req, res) => {
 app.get('/profile', async (req, res) => {
   try {
       const cookies = req.cookies;
-      console.log(cookies);
-      res.json({
-        status: true,
-        message: 'profile fetch successfully!!'
-      })
+      const {token} = cookies;
+      if(!token) {
+        throw new Error('Invalid Token')
+      }
+      const decoded = jwt.verify(token, process.env.PRIVATE_KEY);
+      const {_id} = decoded;
+      const userProfile = await user.findById(_id);
+      if(userProfile) {
+        res.json({
+          status: true,
+          data: userProfile,
+          message: 'profile fetch successfully!!'
+        })
+      } else {
+        throw new Error('User not found..')
+      }
   
   } catch (error) {
     res.status(400).json({
