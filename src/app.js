@@ -3,12 +3,15 @@ require("dotenv").config();
 const connectDB = require("./config/database");
 const User = require('./models/user')
 const bcrypt = require('bcrypt')
-const {validateSignUpData} = require('./utils/validations')
+const {validateSignUpData} = require('./utils/validations');
+const cookieParser = require("cookie-parser");
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 1111;
 
-app.use(express.json())
+app.use(express.json());
+app.use(cookieParser())
 
 app.post('/signup', async (req, res) => {
   try {
@@ -47,6 +50,9 @@ app.post('/login', async (req, res) => {
       throw new Error('Password is Incorrect...')
     }
     else {
+      const token = await jwt.sign({_id: user._id}, 'DEV@Tinder#143$')
+      console.log(token)
+      res.cookie('token', token)
       res.json({
         status: true,
         message: 'Successfully login..'
@@ -61,6 +67,23 @@ app.post('/login', async (req, res) => {
     } 
 })
 
+app.get('/profile', async (req, res) => {
+  try {
+      const cookies = req.cookies;
+      console.log(cookies);
+      res.json({
+        status: true,
+        message: 'profile fetch successfully!!'
+      })
+  
+  } catch (error) {
+    res.status(400).json({
+      status: false,
+      data: [],
+      message: error.message || 'Something went wrong..'
+    })
+  }
+})
 app.get('/user', async (req, res) => {
   try {
     const usersList = await User.find({emailId: req.body.emailId || ''})
