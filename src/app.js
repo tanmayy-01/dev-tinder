@@ -5,7 +5,6 @@ const User = require('./models/user')
 const bcrypt = require('bcrypt')
 const {validateSignUpData} = require('./utils/validations');
 const cookieParser = require("cookie-parser");
-const jwt = require('jsonwebtoken');
 const user = require("./models/user");
 const {userAuth} = require('./middlewares/auth')
 
@@ -47,13 +46,15 @@ app.post('/login', async (req, res) => {
       throw new Error('User is not registerd!')
     } 
     
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await user.validatePassword(password)
     if(!isPasswordCorrect) {
       throw new Error('Password is Incorrect...')
     }
     else {
-      const token = jwt.sign({_id: user._id}, process.env.PRIVATE_KEY)
-      res.cookie('token', token)
+     const token = await user.getJWT()
+      res.cookie('token', token,{
+        expires: new Date(Date.now() + 8 * 3600000)
+      })
       res.json({
         status: true,
         message: 'Successfully login..'
