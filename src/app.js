@@ -2,11 +2,8 @@ const express = require("express");
 require("dotenv").config();
 const connectDB = require("./config/database");
 const User = require('./models/user')
-const bcrypt = require('bcrypt')
-const {validateSignUpData} = require('./utils/validations');
 const cookieParser = require("cookie-parser");
-const user = require("./models/user");
-const {userAuth} = require('./middlewares/auth')
+
 
 const app = express();
 const PORT = process.env.PORT || 1111;
@@ -14,57 +11,14 @@ const PORT = process.env.PORT || 1111;
 app.use(express.json());
 app.use(cookieParser())
 
+const authRouter = require('./routes/auth')
+const profileRouter = require('./routes/profile')
 
-app.post('/login', async (req, res) => {
-  try {
-    
-    const { emailId, password} = req.body;
-    const user = await User.findOne({emailId : emailId})
-    if(!user) {
-      throw new Error('User is not registerd!')
-    } 
-    
-    const isPasswordCorrect = await user.validatePassword(password)
-    if(!isPasswordCorrect) {
-      throw new Error('Password is Incorrect...')
-    }
-    else {
-     const token = await user.getJWT()
-      res.cookie('token', token,{
-        expires: new Date(Date.now() + 8 * 3600000)
-      })
-      res.json({
-        status: true,
-        message: 'Successfully login..'
-    });
-    }
-     
-    } catch (error) {
-      res.status(400).json({
-        status: false,
-        message: `ERROR: ${error.message}`
-      })
-    } 
-})
+app.use('/', authRouter)
+app.use('/', profileRouter)
 
-app.get('/profile', userAuth, async (req, res) => {
-  try {
-     
-      const userProfile = req.userProfile; 
-        res.json({
-          status: true,
-          data: userProfile,
-          message: 'profile fetch successfully!!'
-        })
-     
-  } catch (error) {
-    res.status(400).json({
-      status: false,
-      data: [],
-      message: error.message || 'Something went wrong..'
-    })
-  }
-})
+
+
 app.get('/user', async (req, res) => {
   try {
     const usersList = await User.find({emailId: req.body.emailId || ''})
