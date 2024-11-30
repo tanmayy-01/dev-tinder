@@ -11,6 +11,7 @@ const validateSignUpData = (req) => {
     throw new Error("Please enter strong password");
   }
 };
+
 const validateProfileEdit = (req) => {
   const editableFeilds = [
     "firstName",
