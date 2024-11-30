@@ -29,7 +29,14 @@ const validateProfileEdit = (req) => {
   if (!isEditable) throw new Error("Invalid Edit Request"); 
 };
 
+const validateConnectionRequest = (req) => {
+    const allowedStatus = ["ignore", "intrested"]
+    const isValidStatus = allowedStatus.includes(req.params.status)
+    if(!isValidStatus) throw new Error('Invalid Status!!')
+}
+
 module.exports = {
   validateSignUpData,
   validateProfileEdit,
+  validateConnectionRequest
 };
