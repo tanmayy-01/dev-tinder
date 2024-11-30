@@ -53,6 +53,10 @@ const userSchema = new Schema({
         type: String,
         default: 'This is default about you..'
     },
+    photoURL: {
+        type: String,
+        default: 'https://stock.adobe.com/search/images?k=default+profile+picture'
+    },
     skills: {
         type: [String]
     }
