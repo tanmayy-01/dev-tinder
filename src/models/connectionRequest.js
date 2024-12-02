@@ -20,6 +20,8 @@ const connectionRequestSchema = new Schema({
     }
 },{timestamps: true})
 
+connectionRequestSchema.index({fromUserId: 1, toUserId: 1})
+
 connectionRequestSchema.pre('save', function (next) {
     const request = this;
     if(request.fromUserId.equals(request.toUserId)) {
