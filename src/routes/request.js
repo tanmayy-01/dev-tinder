@@ -29,7 +29,7 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req,res) 
         })
 
         if(existingConnectionRequest) {
-            res.status(400).json({
+          return res.status(400).json({
                 status: false,
                 message: 'Request is already sent!!'
             })
@@ -61,7 +61,7 @@ requestRouter.post('/request/review/:status/:requestId', userAuth, async (req, r
 
        const allowedStatus = ['accepted', 'rejected'];
        if(!allowedStatus.includes(status)) {
-            res.status(400).json({
+           return res.status(400).json({
                 status: false,
                 message: 'Invalid status!!!'
             })
@@ -73,7 +73,7 @@ requestRouter.post('/request/review/:status/:requestId', userAuth, async (req, r
        });
 
        if(!connectionRequest) {
-        res.status(404).json({
+        return res.status(404).json({
             status: false,
             message: 'Connection request not found!!'
         })
