@@ -32,9 +32,17 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
                 {fromUserId: req.userProfile._id, status: 'accepted'},
             ]
         }).populate('fromUserId', USER_SAFE_DATA)
+        .populate('toUserId', USER_SAFE_DATA)
+
+        const data = connectionsRequest.map(request => {
+            if(request.fromUserId._id.toString() === req.userProfile._id.toString()) {
+                return request.toUserId;
+            }
+            return request.fromUserId;
+        })
         res.json({
             status: true,
-            data: connectionsRequest,
+            data: data,
             message: 'Connections fetched successfully!!'
         })
     } catch (error) {
