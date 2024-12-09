@@ -55,7 +55,7 @@ const userSchema = new Schema({
     },
     photoURL: {
         type: String,
-        default: 'https://stock.adobe.com/search/images?k=default+profile+picture'
+        default: 'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg'
     },
     skills: {
         type: [String]
